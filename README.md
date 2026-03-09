@@ -1,8 +1,8 @@
 # TimerResolution-Optimization
 
 Configure and apply a custom **system timer resolution** via `SetTimerResolution.exe` to **drastically reduce** DPC latency and stabilize performance.  
-**Videos:** [▶ 1](https://youtu.be/xfWaux1z2Yk) / [▶ 2](https://youtu.be/DhtpBtnFoCI) &nbsp;|&nbsp; **Source:** [Microsoft Learn – Timer Resolution](https://learn.microsoft.com/windows/win32/api/timeapi/nf-timeapi-timebeginperiod)
-
+**Videos :** [▶ Preview & Info 1](https://youtu.be/xfWaux1z2Yk) / [▶ 2](https://youtu.be/DhtpBtnFoCI)  
+**Source:** [Microsoft Learn – Timer Resolution](https://learn.microsoft.com/windows/win32/api/timeapi/nf-timeapi-timebeginperiod)
 <details>
   <summary>▶ Click to show script preview</summary>
 
