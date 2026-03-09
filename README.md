@@ -3,8 +3,7 @@
 <details>
   <summary>▶ Click to show script preview</summary>
 
-![preview1](https://imgur.com/wK7qsnW.png)
-![preview2](https://i.imgur.com/LIEN_IMAGE2.png)
+![preview1](https://i.imgur.com/wK7qsnW.png)
 
 </details>
 
@@ -16,16 +15,15 @@
   <summary>▶ Click to show Before / After results</summary>
 
 **❌ Off — Default Windows (15.6250ms)**
-![off](https://imgur.com/JcPjqDy.png)
+![off](https://i.imgur.com/JcPjqDy.png)
 
 **🟡 With GlobalTimerResolutionRequests only (1.0000ms)**
-![with-key](https://imgur.com/rvklGn6.png)
+![with-key](https://i.imgur.com/rvklGn6.png)
 
 **✅ SetTimerResolution + GlobalTimerResolutionRequests (0.5060ms)**
-![active](https://imgur.com/HXwq0XC.png)
+![active](https://i.imgur.com/HXwq0XC.png)
 
 </details>
-
 
 Configure and apply a custom **system timer resolution** via `SetTimerResolution.exe`. This allows reaching resolutions far below Windows' default to **drastically reduce** DPC latency and stabilize performance.  
 **Source:** [Microsoft Learn – Timer Resolution](https://learn.microsoft.com/windows/win32/api/timeapi/nf-timeapi-timebeginperiod)
