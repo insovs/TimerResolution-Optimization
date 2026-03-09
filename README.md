@@ -81,7 +81,7 @@ After applying the key, launch the script and select a value.
 There is no universally optimal value — the result depends on each system.  
 It is recommended to start with **0.5200ms** (option 2), the most stable value for the majority of configurations.
 
-```
+
 | Option | Value | Info |
 |---|---|---|
 | **`1`** | Custom | Any value between `5000` and `5200` |
@@ -90,7 +90,6 @@ It is recommended to start with **0.5200ms** (option 2), the most stable value f
 | **`4`** | `0.5086ms` | Most optimal (if stable!) |
 | **`5`** | `0.5060ms` | Perfect (if stable!) |
 | **`6`** | `0.5000ms` | Experimental |
-```
 
 > [!NOTE]
 > Values are expressed in **100-nanosecond units**. Example: `5120` = `0.5120ms`.
