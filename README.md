@@ -1,6 +1,6 @@
 <div align="center">
 
-# TimerResolution Optimization
+# Optimize Your Windows Timer Resolution
 
 Configure and apply a custom **system timer resolution** via `SetTimerResolution.exe`<br>
 to drastically reduce DPC latency and stabilize performance on Windows 10 & 11.
