@@ -1,17 +1,28 @@
-# TimerResolution Optimization (Windows 10 & 11)
+<div align="center">
 
-Configure and apply a custom **system timer resolution** via `SetTimerResolution.exe` to **drastically reduce** DPC latency and stabilize performance.  
-**Videos :** [▶ Preview & Info](https://youtu.be/xfWaux1z2Yk) / [▶ Update Script](https://youtu.be/DhtpBtnFoCI)  
-**Source:** [Microsoft Learn – Timer Resolution](https://learn.microsoft.com/windows/win32/api/timeapi/nf-timeapi-timebeginperiod)
+# TimerResolution Optimization
+
+Configure and apply a custom **system timer resolution** via `SetTimerResolution.exe`<br>
+to drastically reduce DPC latency and stabilize performance on Windows 10 & 11.
+
+[![Discord](https://img.shields.io/badge/Support-Discord-5865F2?logo=discord&logoColor=white)](https://discord.com/invite/fayeECjdtb)
+[![Preview](https://img.shields.io/badge/Video-Preview-FF0000?logo=youtube&logoColor=white)](https://youtu.be/xfWaux1z2Yk)
+[![Update Script](https://img.shields.io/badge/Video-Update_Script-FF0000?logo=youtube&logoColor=white)](https://youtu.be/DhtpBtnFoCI)
+[![Source](https://img.shields.io/badge/Docs-Microsoft_Learn-0078D4?logo=microsoft&logoColor=white)](https://learn.microsoft.com/windows/win32/api/timeapi/nf-timeapi-timebeginperiod)
+
+</div>
+
+---
+
 <details>
-  <summary>▶ Click to show script preview</summary>
+<summary><b>► Script preview</b></summary>
 
-![preview1](https://i.imgur.com/wK7qsnW.png)
+<p align="center"><img src="https://i.imgur.com/wK7qsnW.png" /></p>
 
 </details>
 
 <details>
-  <summary>▶ Click to show Before / After results</summary>
+<summary><b>► Before / After results</b></summary>
 
 **❌ Off — Default Windows (15.6250ms)**
 ![off](https://i.imgur.com/JcPjqDy.png)
@@ -28,7 +39,7 @@ Configure and apply a custom **system timer resolution** via `SetTimerResolution
 
 ## What is Timer Resolution?
 
-> By default, Windows runs at **~15.6ms** — the system clock refreshes every 15.6ms. Lowering this improves precision and reduces latency, which matters in competitive gaming where every millisecond counts.
+By default, Windows runs at **~15.6ms** — the system clock refreshes every 15.6ms. Lowering this improves precision and reduces latency, which matters in competitive gaming where every millisecond counts.
 
 ---
 
@@ -121,7 +132,6 @@ Windows 10 reverts to default resolution when no process actively holds a high-p
 
 ---
 
-<p align="center">
-  <sub>©insopti — <a href="https://guns.lol/inso.vs">guns.lol/inso.vs</a> | For personal use only.</sub>
-</p>
-
+<div align="center">
+  <sub>©insopti — <a href="https://guns.lol/inso.vs">guns.lol/inso.vs</a> · For personal use only.</sub>
+</div>
