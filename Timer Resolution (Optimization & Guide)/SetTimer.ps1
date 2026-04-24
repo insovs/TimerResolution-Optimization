@@ -1,0 +1,80 @@
+# SetTimer Resolution Script | [https://guns.lol/inso.vs]
+# Automated tool that configures sub-millisecond timer resolution on Windows 10 and 11
+# to reduce system latency and improve responsiveness. Lowers the default Windows timer
+# from 15.6ms down to ~0.5ms, allowing the OS to process tasks up to 2000 times per second
+# instead of 64, resulting in significantly reduced input lag and improved frame consistency.
+# The script deploys SetTimerResolution.exe via Task Scheduler at SYSTEM level with auto-restart,
+# applies the GlobalTimerResolutionRequests registry key, and creates a startup shortcut for persistence.
+# Includes a Windows 10 DPC latency fix via Dpclat.exe, required to enable resolution changes on Win10.
+# Usage: Run the script with administrator privileges, select a resolution value, confirm application.
+# Benefits: Reduced input latency, improved frame timing consistency, better audio precision,
+# lower DPC latency, persistent configuration across reboots, automatic recovery on process crash.
+# Ideal for: competitive players, audio producers, and low-latency enthusiasts.
+
+# For personal use only. Modification/redistribution prohibited.
+# Official source: [https://guns.lol/inso.vs]
+
+$sourceFolder = Split-Path -Parent ([System.IO.Path]::GetFullPath($MyInvocation.MyCommand.Definition))
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { $e2=[char]27; Write-Host ("`n"+$e2+"[91mThis script must be run as Administrator !"+$e2+"[0m"); Write-Host ($e2+"[93mRight-click and choose "+$e2+"[97m'Run as Administrator'"+$e2+"[93m."+$e2+"[0m`n"); Read-Host "Press Enter to quit"|Out-Null; exit }
+$e=[char]27; $r="$e[91m"; $g="$e[92m"; $j="$e[93m"; $b="$e[94m"; $w="$e[97m"; $d="$e[90m"; $bg="$e[38;2;100;140;180m"
+function WC([string]$t) { Write-Host $t }
+function LB([string]$n) { return ($bg+"["+$w+$n+$bg+"]"+$w) }
+function P([string]$s,[string]$c="Green") { WC ("  "+(LB "+")+" "+(& {if($c-eq"Green"){$g}elseif($c-eq"Red"){$r}elseif($c-eq"Yellow"){$j}elseif($c-eq"Gray"){$d}else{$w}})+$s+$w) }
+function StatusLine([string]$lb,[string]$val,[string]$col) { Write-Host "                                    $lb " -ForegroundColor DarkGray -NoNewline; Write-Host $val -ForegroundColor $col }
+$installFolder="C:\Program Files\TimerResolutionFix"; $exeDest=Join-Path $installFolder "SetTimerResolution.exe"; $dpclatDest=Join-Path $installFolder "Dpclat.exe"
+function Show-Header { Write-Host "`n             ::::::::  :::::::::: :::::::::::     ::::::::::: :::::::::::  :::    ::::  :::::::::: :::::::::  " -ForegroundColor DarkCyan; Write-Host "            :+:    :+: :+:            :+:             :+:         :+:     +:+:+: :+:+:+ :+:        :+:    :+: " -ForegroundColor DarkCyan; Write-Host "            +:+        +:+            +:+             +:+         +:+     +:+ +:+:+ +:+ +:+        +:+    +:+ " -ForegroundColor DarkCyan; Write-Host "            +#++:++#++ +#++:++#       +#+             +#+         +#+     +#+  +:+  +#+ +#++:++#   +#++:++#:  " -ForegroundColor Gray; Write-Host "                   +#+ +#+            +#+             +#+         +#+     +#+       +#+ +#+        +#+    +#+ " -ForegroundColor Gray; Write-Host "            #+#    #+# #+#            #+#             #+#         #+#     #+#       #+# #+#        #+#    #+# "; Write-Host "             ########  ##########     ###             ###     ########### ###       ### ########## ###    ### `n" -ForegroundColor White; Write-Host "              System Timer Resolution Optimization | Sub-Millisecond Precision & Low-Latency Configuration." -ForegroundColor White; Write-Host "                 For personal use only. " -ForegroundColor DarkGray -NoNewline; Write-Host "Modifying" -ForegroundColor Red -NoNewline; Write-Host ", " -ForegroundColor DarkGray -NoNewline; Write-Host "copying" -ForegroundColor Red -NoNewline; Write-Host ", or " -ForegroundColor DarkGray -NoNewline; Write-Host "redistributing" -ForegroundColor Red -NoNewline; Write-Host " this script is " -ForegroundColor DarkGray -NoNewline; Write-Host "prohibited" -ForegroundColor Red -NoNewline; Write-Host "." -ForegroundColor DarkGray; Write-Host "                 This script must be downloaded only from the official source: " -ForegroundColor DarkGray -NoNewline; Write-Host "https://guns.lol/inso.vs" -ForegroundColor White -NoNewline; Write-Host ".`n" -ForegroundColor DarkGray; Write-Host "                                   " -NoNewline; Write-Host ($bg+"[ "+$w) -NoNewline; Write-Host "Press " -ForegroundColor DarkGray -NoNewline; Write-Host "X" -ForegroundColor White -NoNewline; Write-Host " to quit" -ForegroundColor DarkGray -NoNewline; Write-Host ($bg+" | "+$w) -NoNewline; Write-Host "Press " -ForegroundColor DarkGray -NoNewline; Write-Host "D" -ForegroundColor White -NoNewline; Write-Host " to open Discord" -ForegroundColor DarkGray -NoNewline; Write-Host ($bg+" ]"+$w); Write-Host "";Write-Host "" }
+function Show-Status { $sr=Get-Process -EA SilentlyContinue|Where-Object{$_.Name -like "*SetTimerResolution*"}; $tSTR=Get-ScheduledTask -TaskName "SetTimerResolution" -EA SilentlyContinue; $rk=Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" -Name "GlobalTimerResolutionRequests" -EA SilentlyContinue; $tDpc=Get-ScheduledTask -TaskName "DpcLatFix" -EA SilentlyContinue; $dpr=Get-Process -EA SilentlyContinue|Where-Object{$_.Name -like "*Dpclat*"}; $ro=$rk -and $rk.GlobalTimerResolutionRequests -eq 1
+    StatusLine "[ GlobalTimerResoKey ]" (& {if($ro){"Active"}else{"Not applied"}}) (& {if($ro){"Green"}else{"DarkGray"}})
+    Write-Host "                                    [ SetTimerResolution ] " -ForegroundColor DarkGray -NoNewline
+    if($sr){try{$wmi=Get-WmiObject Win32_Process -EA SilentlyContinue|Where-Object{$_.Name -like "*SetTimerResolution*"};if($wmi -and $wmi.CommandLine -match "--resolution (\d+)"){Write-Host "Running " -ForegroundColor Green -NoNewline;Write-Host ("("+[math]::Round([int]$matches[1]/10000,4)+"ms)") -ForegroundColor White}else{Write-Host "Running" -ForegroundColor Green}}catch{Write-Host "Running" -ForegroundColor Green}}else{Write-Host "Not running" -ForegroundColor Red}
+    StatusLine "[ Task Scheduler STR ]" (& {if($tSTR){"Active"}else{"Not configured"}}) (& {if($tSTR){"Green"}else{"DarkGray"}})
+    Write-Host "                                    [    Fix (Win 10)    ] " -ForegroundColor DarkGray -NoNewline
+    if($tDpc){if($dpr){Write-Host "Active + Running" -ForegroundColor Green}else{Write-Host "Configured (runs at boot)" -ForegroundColor Cyan}}else{Write-Host "Not configured" -ForegroundColor DarkGray}; Write-Host "" }
+function Show-Menu {Write-Host ""; WC ("  "+(LB "+")+" "+$w+"Choose the timer resolution you want to apply."); WC ($w+"      It is important to understand what you are doing to get the best results."); WC ($w+"      Use a "+$g+"custom value"+$w+" with "+$g+"low latency"+$w+" and "+$g+"no spikes"+$w+" measured with MeasureSleep."); WC ($w+"      The values shown are "+$r+"NOT recommended"+$w+" to use directly, test and verify.`n"); WC ($w+"      Spikes are caused by bad drivers, background apps "+$d+"(antivirus, Wi-Fi, RGB software)"); WC ($w+"      and active hardware components generating kernel interruptions.`n"); WC ("  "+(LB "+")+" "+$w+"To reduce DPC latency spikes :"); WC ($d+"      - Set a Optimal/High Performance Power Plan."); WC ($d+"      - Disable Wi-Fi and Bluetooth in Device Manager if using wired connection."); WC ($d+"      - Stop audio peripherals/services like (Nahimic, Sonic Studio, Realtek HD Manager)."); WC ($d+"      - Keep GPU and chipset drivers up to date & clean.`n"); WC ("  "+(LB "1")+" "+$w+"Custom   "+$d+"(Enter a value manually)"); WC ("  "+(LB "2")+" "+$b+"0.5200ms"+$w+" "+$d+"(Recommended, lowest and most stable value for most systems)"); WC ("  "+(LB "3")+" "+$b+"0.5120ms"); WC ("  "+(LB "4")+" "+$b+"0.5086ms"); WC ("  "+(LB "5")+" "+$b+"0.5060ms"); WC ("  "+(LB "6")+" "+$b+"0.5000ms"); WC ("  "+(LB "0")+" "+$w+"Windows 10 fix "+$d+"(Add DPC Latency Checker executable to startup via Task Scheduler)"); WC ("  "+(LB "9")+" "+$r+"Uninstall "+$d+"(Remove everything & Keep only GlobalTimerResolutionRequests)") }
+function Show-EndMenu { Write-Host ""; WC ("  "+(LB "1")+" Return to menu"); WC ("  "+(LB "2")+" Quit"); WC ("  "+(LB "3")+" Open Discord"); Write-Host ""; while($true){switch(Read-Host ("  "+(LB ">")+" "+$w)){"1"{return "menu"}"2"{return "quit"}"3"{Start-Process "https://guns.lol/inso.vs";return "quit"}default{P "Invalid choice. Please enter 1, 2 or 3." "Yellow"}}} }
+function Stop-NamedProcess([string]$pat,[string]$lbl) { $proc=Get-Process -EA SilentlyContinue|Where-Object{$_.Name -like $pat}; if(-not $proc){return}; P "Stopping $lbl..." "White"; try{$proc|Stop-Process -Force -EA Stop;Start-Sleep -Seconds 2;P "$lbl stopped."}catch{P "Failed to stop $lbl : $($_.Exception.Message)" "Red"} }
+function Remove-Task([string]$n) { try{Unregister-ScheduledTask -TaskName $n -Confirm:$false -EA Stop;P "Task '$n' removed."}catch [Microsoft.Management.Infrastructure.CimException]{P "Task '$n' not found, skipping." "Gray"}catch{P "Failed to remove task '$n' : $($_.Exception.Message)" "Red"} }
+function Ensure-InstallFolder { if(Test-Path $installFolder){return $true}; try{New-Item -ItemType Directory -Path $installFolder -Force -EA Stop|Out-Null;P "Install folder created." "White";return $true}catch{P "Failed to create install folder: $($_.Exception.Message)" "Red";return $false} }
+function Copy-Exe([string]$src,[string]$dst,[string]$lbl) { if(-not(Test-Path $src)){P "$lbl not found at: $src" "Red";return $false}; try{Copy-Item -Path $src -Destination $dst -Force -EA Stop;P "$lbl copied successfully.";return $true}catch{P "Failed to copy $lbl : $($_.Exception.Message)" "Red";return $false} }
+function Register-STRTask([string]$exe,[string]$args,[string]$name) { $action=if($args){New-ScheduledTaskAction -Execute $exe -Argument $args}else{New-ScheduledTaskAction -Execute $exe}; $settings=New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit 0 -RestartCount 3 -RestartInterval(New-TimeSpan -Minutes 1); try{Register-ScheduledTask -TaskName $name -Action $action -Trigger(New-ScheduledTaskTrigger -AtStartup) -Principal(New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest) -Settings $settings -Force -EA Stop|Out-Null;P "Task '$name' registered/updated.";return $true}catch{P "Task '$name' registration failed: $($_.Exception.Message)" "Red";return $false} }
+$Host.UI.RawUI.WindowTitle="[https://guns.lol/inso.vs] System Timer Resolution Optimization"; $Host.UI.RawUI.BackgroundColor="Black"; $Host.UI.RawUI.ForegroundColor="White"
+:mainLoop while($true) {
+    Clear-Host; Show-Header; Show-Status; Show-Menu
+    $resolutionValue=$null; $resLabel=""
+    while($null -eq $resolutionValue) {
+        Write-Host ""
+        switch(Read-Host ("  "+(LB ">")+" "+$w)) {
+            "1" { Clear-Host;Show-Header; WC ($w+"  Enter a custom resolution "+$d+"(exemple: "+$b+"5072"+$d+" = "+$b+"0.5072 ms"+$d+") :"); $custom=Read-Host ("  "+(LB "+")+" "+$j+"Custom value"+$w); if($custom -match "^\d+$" -and [int]$custom -gt 0){$resolutionValue=$custom;$resLabel="$custom (custom)"}else{P "Invalid value. Please enter a positive integer." "Red"} }
+            "2" { $resolutionValue="5200"; $resLabel="0.5200ms (Recommended)" }
+            "3" { $resolutionValue="5120"; $resLabel="0.5120ms" }
+            "4" { $resolutionValue="5086"; $resLabel="0.5086ms" }
+            "5" { $resolutionValue="5060"; $resLabel="0.5060ms" }
+            "6" { $resolutionValue="5000"; $resLabel="0.5000ms" }
+            "0" { Clear-Host;Show-Header
+                if((Get-ScheduledTask -TaskName "DpcLatFix" -EA SilentlyContinue) -and (Test-Path $dpclatDest)){P "DPC Latency fix (Windows 10) is already installed and configured." "Yellow";P "Task 'DpcLatFix' already exists and 'Dpclat.exe' is already in place." "Gray"}
+                else{P "Windows 10 DPC Latency Fix - Installing with Task Scheduler..." "White";$src=Join-Path $sourceFolder "Content\Windows10Fix\Dpclat.exe";if((Ensure-InstallFolder) -and (Copy-Exe $src $dpclatDest "Dpclat.exe") -and (Register-STRTask $dpclatDest "" "DpcLatFix")){P "DpcLat will run at every system boot (SYSTEM level).";P "Auto-restart enabled if process crashes.";try{Start-Process $dpclatDest -EA Stop;P "DpcLat is now running."}catch{P "Failed to start DpcLat: $($_.Exception.Message)" "Red"}}}
+                Write-Host ""; if((Show-EndMenu) -eq "menu"){continue mainLoop}else{exit} }
+            "9" { Clear-Host;Show-Header;P "Full Uninstall - Removing everything (keeping GlobalTimerResolutionRequests)." "White";Write-Host ""
+                Stop-NamedProcess "*SetTimerResolution*" "SetTimerResolution.exe";Stop-NamedProcess "*Dpclat*" "DpcLat.exe"
+                P "Removing Task Scheduler entries..." "White";Remove-Task "SetTimerResolution";Remove-Task "DpcLatFix"
+                P "Removing TimerResolutionFix folder..." "White";if(Test-Path $installFolder){try{Remove-Item -Path $installFolder -Recurse -Force -EA Stop;P "Install folder removed."}catch{P "Failed to remove install folder: $($_.Exception.Message)" "Red"}}else{P "Install folder not found, skipping." "Gray"}
+                P "Uninstall complete! Windows is back to default state with GlobalTimerResolutionRequests Active.";Write-Host ""
+                if((Show-EndMenu) -eq "menu"){continue mainLoop}else{exit} }
+            "x" { exit }
+            "d" { Start-Process "https://guns.lol/inso.vs" }
+            default { P "Invalid choice. Please enter a valid option." "Yellow" }
+        }
+    }
+    Clear-Host;Show-Header;P "Resolution selected : $b$resLabel" "White"
+    P "Applying 'GlobalTimerResolutionRequests' registry key..." "White";try{Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" -Name "GlobalTimerResolutionRequests" -Value 1 -Type DWord -Force -EA Stop;P "Registry key applied."}catch{P "Registry key failed: $($_.Exception.Message)" "Red";Read-Host|Out-Null;exit}
+    if(-not(Ensure-InstallFolder)){Read-Host|Out-Null;exit}
+    $exeSource=Join-Path $sourceFolder "Content\SetTimerResolution.exe"
+    if(Test-Path $exeDest){P "SetTimerResolution.exe already present, skipping copy." "White"}elseif(-not(Copy-Exe $exeSource $exeDest "SetTimerResolution.exe")){Read-Host|Out-Null;exit}
+    try{$sc=(New-Object -ComObject WScript.Shell).CreateShortcut((Join-Path([Environment]::GetFolderPath("Startup")) "SetTimerResolution.exe - Raccourci.lnk"));$sc.TargetPath=$exeDest;$sc.Arguments="--resolution $resolutionValue --no-console";$sc.Save();P "Startup shortcut created/updated."}catch{P "Failed to create startup shortcut: $($_.Exception.Message)" "Red"}
+    P "Registering SetTimerResolution in Task Scheduler..." "White";if(-not(Register-STRTask $exeDest "--resolution $resolutionValue --no-console" "SetTimerResolution")){Read-Host|Out-Null;exit}
+    Stop-NamedProcess "*SetTimerResolution*" "SetTimerResolution.exe"
+    $ms=Join-Path $sourceFolder "MeasureSleep.exe";if((Test-Path $ms) -and -not(Get-Process -EA SilentlyContinue|Where-Object{$_.Name -like "*MeasureSleep*"})){try{Start-Process $ms -EA Stop;P "MeasureSleep.exe launched."}catch{P "Failed to launch MeasureSleep: $($_.Exception.Message)" "Red"}}
+    P "Starting SetTimerResolution.exe with the selected resolution..." "White";try{Start-Process $exeDest -ArgumentList "--resolution $resolutionValue --no-console" -EA Stop;Start-Sleep -Seconds 1;if(Get-Process -EA SilentlyContinue|Where-Object{$_.Name -like "*SetTimerResolution*"}){P "SetTimerResolution.exe is running with the new resolution."}else{P "Warning: SetTimerResolution.exe may not have started correctly." "Red"}}catch{P "Failed to start SetTimerResolution.exe: $($_.Exception.Message)" "Red"}
+    P "All done! SetTimerResolution is now running.";Write-Host ""
+    if((Show-EndMenu) -eq "menu"){continue mainLoop}else{exit}
+}
