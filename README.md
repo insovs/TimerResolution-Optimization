@@ -5,8 +5,7 @@
 [![Update Script](https://img.shields.io/badge/Video-Update_Script-FF0000?logo=youtube&logoColor=white)](https://youtu.be/DhtpBtnFoCI)
 [![Source](https://img.shields.io/badge/Docs-Microsoft_Learn-0078D4?logo=microsoft&logoColor=white)](https://learn.microsoft.com/windows/win32/api/timeapi/nf-timeapi-timebeginperiod)
   
-<img width="1680" height="360" alt="SetTimerBanner" src="https://github.com/user-attachments/assets/34e6a22c-68ee-478a-92cc-90027a7e75ac" />
-<img width="1536" height="1024" alt="TimerRes" src="https://github.com/user-attachments/assets/8b92500a-fb2f-4c76-948b-da82e1fd7b65" />
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/b2c38f2f-3aab-46eb-9375-0529752a31f0" />
 
 </div>
 
