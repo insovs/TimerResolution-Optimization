@@ -1,12 +1,12 @@
 # Content
 
 ```
-SetTimer.ps1
-MeasureSleep.exe              <- measurement tool (optional but recommended)
+SetTimer.ps1                 <- main tool
+MeasureSleep.exe             <- measurement tool (optional but recommended)
 Content\
-  SetTimerResolution.exe      <- main tool
+  SetTimerResolution.exe     <- TimerResolution Executable
   Windows10Fix\
-    Dpclat.exe                <- DPC fix for Windows 10 only
+    Dpclat.exe               <- DPC fix for Windows 10 only
 ```
 
 ---
