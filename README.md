@@ -1,18 +1,23 @@
 <div align="center">
 <img width="1680" height="360" alt="SetTimerBanner" src="https://github.com/user-attachments/assets/34e6a22c-68ee-478a-92cc-90027a7e75ac" />
-
-
-# Optimize Your Windows Timer Resolution
-
-Configure and apply a custom **system timer resolution** via `SetTimerResolution.exe`<br>
-to drastically reduce DPC latency and stabilize performance on Windows 10 & 11.
-
+  
 [![Discord](https://img.shields.io/badge/Support-Discord-5865F2?logo=discord&logoColor=white)](https://discord.com/invite/fayeECjdtb)
 [![Preview](https://img.shields.io/badge/Video-Preview-FF0000?logo=youtube&logoColor=white)](https://youtu.be/xfWaux1z2Yk)
 [![Update Script](https://img.shields.io/badge/Video-Update_Script-FF0000?logo=youtube&logoColor=white)](https://youtu.be/DhtpBtnFoCI)
 [![Source](https://img.shields.io/badge/Docs-Microsoft_Learn-0078D4?logo=microsoft&logoColor=white)](https://learn.microsoft.com/windows/win32/api/timeapi/nf-timeapi-timebeginperiod)
 
 </div>
+
+---
+
+## Optimize Your Windows Timer Resolution
+
+Configure and apply a custom **system timer resolution** via `SetTimerResolution.exe`<br>
+to drastically reduce DPC latency and stabilize performance on Windows 10 & 11.
+
+## What is the Timer Resolution ?
+
+By default, Windows runs at **~15.6ms** — the system clock refreshes every 15.6ms. Lowering this improves precision and reduces latency, which matters in competitive gaming where every millisecond counts.
 
 ---
 
@@ -36,12 +41,6 @@ to drastically reduce DPC latency and stabilize performance on Windows 10 & 11.
 ![active](https://i.imgur.com/HXwq0XC.png)
 
 </details>
-
----
-
-## What is Timer Resolution?
-
-By default, Windows runs at **~15.6ms** — the system clock refreshes every 15.6ms. Lowering this improves precision and reduces latency, which matters in competitive gaming where every millisecond counts.
 
 ---
 
