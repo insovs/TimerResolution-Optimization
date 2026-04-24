@@ -1,23 +1,4 @@
-# SetTimer — System Timer Resolution Optimization
-**by [guns.lol/inso.vs] | (https://discord.gg/fayeECjdtb)
-
----
-
-## What is Timer Resolution?
-
-Windows manages time with an internal clock called **timer resolution**.
-By default, it runs at **15.6ms** — meaning Windows can only "react" about 64 times per second.
-
-By lowering this value to **~0.5ms**, Windows reacts ~2000 times per second.
-Result: lower latency, more precise task execution, and better performance in games or audio.
-
----
-
-## Requirements
-
-- Windows 10 or 11
-- PowerShell launched **as Administrator**
-- The following files in the same folder as the script:
+# Content
 
 ```
 SetTimer.ps1
