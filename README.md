@@ -1,5 +1,6 @@
 <div align="center">
-<img width="2172" height="724" alt="1x (2)" src="https://github.com/user-attachments/assets/93e53ada-ea71-4061-bd55-d5b32f06b43d" />
+<img width="1680" height="360" alt="SetTimerBanner" src="https://github.com/user-attachments/assets/34e6a22c-68ee-478a-92cc-90027a7e75ac" />
+
 
 # Optimize Your Windows Timer Resolution
 
