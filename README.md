@@ -16,8 +16,6 @@
 Configure and apply a custom **system timer resolution** via `SetTimerResolution.exe`  
 to drastically reduce DPC latency and stabilize performance on Windows 10 & 11.
 
----
-
 ## 🕐 What is Timer Resolution?
 
 By default, Windows runs at **~15.6ms** — the system clock refreshes every 15.6ms.  
